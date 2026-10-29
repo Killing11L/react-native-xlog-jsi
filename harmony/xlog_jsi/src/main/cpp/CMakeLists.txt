@@ -20,18 +20,8 @@ target_include_directories(rnoh_xlog_jsi PUBLIC
     ${rnoh_xlog_jsi_generated_dir}
 )
 target_link_libraries(rnoh_xlog_jsi PUBLIC rnoh)
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../.ohpm/@ohos+xlog@1.0.0/oh_modules/@ohos/xlog/libs/${OHOS_ARCH}")
-    set(XLOG_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../.ohpm/@ohos+xlog@1.0.0/oh_modules/@ohos/xlog/libs/${OHOS_ARCH})
-    message("XLOG_PATH1: ${XLOG_PATH}")
-elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../../oh_modules/@ohos/xlog/libs/${OHOS_ARCH}")
-    set(XLOG_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../../oh_modules/@ohos/xlog/libs/${OHOS_ARCH})
-    message("XLOG_PATH2: ${XLOG_PATH}")
-else()
-    message("XLOG_PATH: empty")
+set(XLOG_SO "${CMAKE_CURRENT_SOURCE_DIR}/../../../libs/${OHOS_ARCH}/libmarsxlog.so")
+if(NOT EXISTS "${XLOG_SO}")
+    message(FATAL_ERROR "rnoh_xlog_jsi: no bundled xlog library for ${OHOS_ARCH}")
 endif()
-
-file(REAL_PATH "${XLOG_PATH}" XLOG_PATH)
-
-set(XLOG_SO "${XLOG_PATH}/libmarsxlog.so")
-
-target_link_libraries(rnoh_xlog_jsi PUBLIC ${XLOG_SO})
+target_link_libraries(rnoh_xlog_jsi PUBLIC "${XLOG_SO}")

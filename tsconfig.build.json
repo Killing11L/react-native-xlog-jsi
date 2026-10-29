@@ -1,5 +1,5 @@
-
 {
   "extends": "./tsconfig",
-  "exclude": ["example"]
+  "include": ["src/index.tsx"],
+  "exclude": ["example", "harmony", "src/__tests__"]
 }

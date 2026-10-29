@@ -78,7 +78,7 @@ jsi::Value HostFunctionInstall(facebook::jsi::Runtime &rt, react::TurboModule &t
                 break;
             }
 
-        XLoggerInfo info;
+        XLoggerInfo info{};
         info.level = tLogLevel;
         info.tag = "RN";
         info.filename = "";

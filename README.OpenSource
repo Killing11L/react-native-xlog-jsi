@@ -1,0 +1,20 @@
+[
+  {
+    "Name": "react-native-xlog-jsi",
+    "License": "MIT License",
+    "License File": "https://github.com/Flickering-AI/react-native-xlog-jsi/blob/master/LICENSE",
+    "Version Number": "0.4.2",
+    "Owner": "panjinling@huawei.com",
+    "Upstream URL": "https://github.com/Flickering-AI/react-native-xlog-jsi",
+    "Description": "React Native JSI integration for Tencent mars xlog"
+  },
+  {
+    "Name": "mars",
+    "License": "MIT License",
+    "License File": "https://github.com/Tencent/mars/blob/master/LICENSE",
+    "Version Number": "Not specified",
+    "Owner": "panjinling@huawei.com",
+    "Upstream URL": "https://github.com/Tencent/mars",
+    "Description": "Tencent mars xlog logging library"
+  }
+]
