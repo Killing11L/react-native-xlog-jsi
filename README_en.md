@@ -1,33 +1,57 @@
-> Document Template:v0.4.2
+> Document Template: v0.4.2
 
 <p align="center">
   <h1 align="center"> <code>react-native-xlog-jsi</code> </h1>
 </p>
 
-This project is based on [react-native-xlog-jsi](https://github.com/Flickering-AI/react-native-xlog-jsi) and provides a React Native OpenHarmony (RNOH) adaptation. Its HarmonyOS package is `@react-native-ohos/react-native-xlog-jsi`, with the JS alias `react-native-xlog-jsi`.
+This project is based on [react-native-xlog-jsi](https://github.com/Flickering-AI/react-native-xlog-jsi).
 
-| Name | Version | Release Information | Example RN Configurations | Autolink | Source |
-| - | - | - | - | - | - |
-| @react-native-ohos/react-native-xlog-jsi | 0.4.3 | [GitHub Releases](https://github.com/react-native-oh-library/react-native-xlog-jsi/releases) | 0.72.* / 0.77.* / 0.82.* / 0.84.* | Configured | [Source](https://github.com/react-native-oh-library/react-native-xlog-jsi) |
+This third-party library has been migrated to Gitcode and is now available for direct download from npm, the new package name is: `@react-native-ohos/react-native-xlog-jsi`, the version correspondence details are as follows:
 
-The versions above indicate that example dependency configurations are provided; they do not mean all versions have been verified on devices.
+| Name | Version(Npm Address) | Release Information | Supported RN Version | Supported Autolink | Compile API Version | Community Baseline Version | Source code address |
+| - | - | - | - | - | - | - | - |
+| @react-native-ohos/react-native-xlog-jsi | [~ 0.4.3 (In development)](https://www.npmjs.com/package/@react-native-ohos/react-native-xlog-jsi) | [Github Releases](https://github.com/react-native-oh-library/react-native-xlog-jsi/releases) | 0.72.* / 0.77.* / 0.82.* / 0.84.* | Yes | API12+ | 0.4.2 | [master](https://github.com/react-native-oh-library/react-native-xlog-jsi/tree/master) |
 
 ## Introduction
 
 The library initializes [mars xlog](https://github.com/Tencent/mars) through JSI and writes React Native console output to xlog on HarmonyOS. The JS API provides the `Xlog` constructor and `Xlog.appenderFlush()` for initialization and flushing.
 
+## Installation
+
+Go to the project directory and execute the following instruction:
+
+**npm**
+
+```bash
+npm install @react-native-ohos/react-native-xlog-jsi
+```
+
+**yarn**
+
+```bash
+yarn add @react-native-ohos/react-native-xlog-jsi
+```
+
 ## Link
 
-Install `@react-native-ohos/react-native-xlog-jsi` in the project first. For projects using Autolink, see the [RNOH Autolinking guide](https://gitcode.com/CPF-RN/ohos_react_native/blob/master/docs/en/Autolinking.md). This library declares an Autolink configuration; its behavior must be verified for each framework version. If Autolink is already configured correctly, the manual linking steps below can be skipped.
+| | Supported Autolink | Supported RN Version |
+| - | - | - |
+| ~ 0.4.3 | Yes | 0.72.* / 0.77.* / 0.82.* / 0.84.* |
+
+Projects using AutoLink need to be configured according to this document, AutoLink framework guide: https://gitcode.com/CPF-RN/ohos_react_native/blob/master/docs/en/Autolinking.md
+
+If the version you are using supports Autolink and the project has integrated Autolink, you can skip the ManualLink configuration.
 
 <details>
-  <summary>ManualLink: configure native dependencies manually</summary>
+  <summary>ManualLink: This step provides guidance for manually configuring native dependencies.</summary>
 
-Open the project's `harmony` directory in DevEco Studio.
+Open the `harmony` directory of the OpenHarmony project in DevEco Studio.
 
 ### 1. Overrides RN SDK
 
-In the HarmonyOS project's root `oh-package.json5`, point the RNOH dependency to the version used by the project. For example:
+To ensure the project relies on the same version of the RN SDK, you need to add an `overrides` field in the project's root `oh-package.json5` file, specifying the RN SDK version to be used. The replacement version can be a specific version number, a semver range, or a locally available HAR package or source directory.
+
+For more information about the purpose of this field, please refer to the [official documentation](https://developer.huawei.com/consumer/en/doc/harmonyos-guides-V5/ide-oh-package-json5-V5#en-us_topic_0000001792256137_overrides).
 
 ```json5
 {
@@ -37,75 +61,142 @@ In the HarmonyOS project's root `oh-package.json5`, point the RNOH dependency to
 }
 ```
 
-Use the matching RNOH version for other RN versions, or use a local HAR package or source directory as appropriate for your project.
+### 2. Introducing Native Code
 
-### 2. Import native code
+Currently, two methods are available:
 
-Add the library HAR or link its source in `entry/oh-package.json5`. The example project links the source:
+- Use the HAR file.
+- Directly link to the source code.
 
-```json5
-{
-  "dependencies": {
-    "@rnoh/react-native-openharmony": "file:../../node_modules/@react-native-oh/react-native-harmony/react_native_openharmony.har",
-    "@react-native-ohos/react-native-xlog-jsi": "file:../../../harmony/xlog_jsi"
+Method 1 (recommended): Use the HAR file.
+
+> [!TIP] The HAR file is stored in the `harmony` directory in the installation path of the third-party library.
+
+Open `entry/oh-package.json5` file and add the following dependencies:
+
+```json
+"dependencies": {
+    "@react-native-ohos/react-native-xlog-jsi": "file:../../node_modules/@react-native-ohos/react-native-xlog-jsi/harmony/xlog_jsi.har"
   }
+```
+
+Click the `sync` button in the upper right corner.
+
+Alternatively, run the following instruction on the terminal:
+
+```bash
+cd entry
+ohpm install
+```
+
+Method 2: Directly link to the source code.
+
+> [!TIP] For details, see [Directly Linking Source Code](https://gitcode.com/CPF-RN/usage-docs/blob/master/en/link-source-code.md).
+
+### 3. Configuring CMakeLists and Introducing RNXlogJSIPackage
+
+Open `entry/src/main/cpp/CMakeLists.txt` and add the following code:
+
+```diff
+project(rnapp)
+cmake_minimum_required(VERSION 3.4.1)
+set(CMAKE_SKIP_BUILD_RPATH TRUE)
+set(RNOH_APP_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(NODE_MODULES "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../node_modules")
++ set(OH_MODULES "${CMAKE_CURRENT_SOURCE_DIR}/../../../oh_modules")
+set(RNOH_CPP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../react-native-harmony/harmony/cpp")
+set(LOG_VERBOSITY_LEVEL 1)
+set(CMAKE_ASM_FLAGS "-Wno-error=unused-command-line-argument -Qunused-arguments")
+set(CMAKE_CXX_FLAGS "-fstack-protector-strong -Wl,-z,relro,-z,now,-z,noexecstack -s -fPIE -pie")
+set(WITH_HITRACE_SYSTRACE 1) # for other CMakeLists.txt files to use
+add_compile_definitions(WITH_HITRACE_SYSTRACE)
+
+add_subdirectory("${RNOH_CPP_DIR}" ./rn)
+
+# RNOH_BEGIN: manual_package_linking_1
+add_subdirectory("../../../../sample_package/src/main/cpp" ./sample-package)
++ add_subdirectory("${OH_MODULES}/@react-native-ohos/react-native-xlog-jsi/src/main/cpp" ./rn_xlog_jsi)
+# RNOH_END: manual_package_linking_1
+
+file(GLOB GENERATED_CPP_FILES "./generated/*.cpp")
+
+add_library(rnoh_app SHARED
+    ${GENERATED_CPP_FILES}
+    "./PackageProvider.cpp"
+    "${RNOH_CPP_DIR}/RNOHAppNapiBridge.cpp"
+)
+target_link_libraries(rnoh_app PUBLIC rnoh)
+
+# RNOH_BEGIN: manual_package_linking_2
+target_link_libraries(rnoh_app PUBLIC rnoh_sample_package)
++ target_link_libraries(rnoh_app PUBLIC rnoh_xlog_jsi)
+# RNOH_END: manual_package_linking_2
+```
+
+Open `entry/src/main/cpp/PackageProvider.cpp` and add:
+
+```diff
+#include "RNOH/PackageProvider.h"
+#include "SamplePackage.h"
++ #include "RNXlogJSIPackage.h"
+
+using namespace rnoh;
+
+std::vector<std::shared_ptr<Package>> PackageProvider::getPackages(Package::Context ctx) {
+    return {
+      std::make_shared<SamplePackage>(ctx),
++     std::make_shared<rnoh::RNXlogJSIPackage>(ctx),
+    };
 }
 ```
 
-These paths apply to this repository's `example/harmony/entry`; adjust them for other projects. Sync in DevEco Studio or run `ohpm install` in the `entry` directory.
+### 4. Introducing RNXlogJSIPackage to ArkTS
 
-### 3. Configure CMakeLists and import RNXlogJSIPackage
+Open `entry/src/main/ets/RNPackagesFactory.ets` and add:
 
-Add the library and link it to the application target in `entry/src/main/cpp/CMakeLists.txt`:
+```diff
+  ...
++ import { RNXlogJSIPackage } from '@react-native-ohos/react-native-xlog-jsi';
 
-```cmake
-add_subdirectory("${OH_MODULES}/@react-native-ohos/react-native-xlog-jsi/src/main/cpp" ./rn_xlog_jsi)
-target_link_libraries(rnoh_app PUBLIC rnoh_xlog_jsi)
-```
-
-Register it in `entry/src/main/cpp/PackageProvider.cpp`:
-
-```cpp
-#include "RNXlogJSIPackage.h"
-
-// Add to the return list in PackageProvider::getPackages():
-std::make_shared<rnoh::RNXlogJSIPackage>(ctx),
-```
-
-### 4. Import RNXlogJSIPackage on the ArkTS side
-
-Add the package in `entry/src/main/ets/RNPackagesFactory.ets`:
-
-```ts
-import { RNXlogJSIPackage } from '@react-native-ohos/react-native-xlog-jsi';
-
-// Add to the return list in createRNPackages(ctx):
-new RNXlogJSIPackage(ctx),
+export function createRNPackages(ctx: RNPackageContext): RNPackage[] {
+  return [
++    new RNXlogJSIPackage(ctx),
+  ];
+}
 ```
 
 </details>
 
-### Run
+## Running
 
-The example defaults to RN 0.84. To switch versions, copy `example/package-82.json`, `package-77.json`, or `package-72.json` to `example/package.json` and reinstall dependencies. The HarmonyOS SDK and project configuration must also match the selected version.
+Click the `sync` button in the upper right corner.
 
-Install dependencies and run `npm pack` in the repository root. Install dependencies and run `npm run dev` in `example`, then sync and build `example/harmony` in DevEco Studio. Select `rnt` on the home screen to open the JSI manual test page.
+Alternatively, run the following instruction on the terminal:
 
-## Constraints and Limitations
+```bash
+cd entry
+ohpm install
+```
+
+Then build and run the code.
+
+
+## Constraints
 
 ### Compatibility
+
+1. RNOH: 0.72.33; SDK: HarmonyOS NEXT B1; IDE: DevEco Studio: 5.0.3.900; ROM: Next.0.0.71;
+2. RNOH: 0.77.18; SDK: HarmonyOS 6.0.0 Release SDK; IDE: DevEco Studio 6.0.0.858; ROM: 6.0.0.112;
+3. RNOH: 0.82.1; SDK: HarmonyOS 6.0.1 Release SDK; IDE: DevEco Studio 6.0.1 Release; ROM: 6.0.0.120 SP7;
+4. RNOH: 0.84.2; SDK: HarmonyOS 6.0.0 Release SDK; IDE: DevEco Studio 6.0.2.636; ROM: 6.0.0.125;
 
 The RN 0.84 example's JS bundle and HarmonyOS HAP have been built, but have not yet been verified on a device. Example dependency configurations are provided for 0.72, 0.77, and 0.82; build and device compatibility must be verified separately. The HarmonyOS native build currently supports arm64-v8a.
 
 ### Permission Requirements
 
-No additional storage permission is required when using a writable app sandbox directory.
+None.
 
-### Build and Run API Requirements
-
-The example project sets its minimum compatible version to API 12. Other environments must be verified with the corresponding RNOH version.
-
-## Usage Example
+## Example
 
 ```ts
 import Xlog from '@react-native-ohos/react-native-xlog-jsi';
@@ -120,7 +211,7 @@ console.log('hello xlog');
 await Xlog.appenderFlush(true);
 ```
 
-## Usage
+## How to Use
 
 **Initialization:** The constructor defaults are `xlogs`, `XLog`, `3`, and `__DEV__`, respectively. On HarmonyOS, use an existing writable absolute path in the app sandbox.
 
@@ -128,7 +219,7 @@ await Xlog.appenderFlush(true);
 
 This library does not expose separate methods for six log levels or a crash handler. The example's console buttons test log output.
 
-## API
+## Available APIs
 
 ### Constructor
 
@@ -149,7 +240,7 @@ This library does not expose separate methods for six log levels or a crash hand
 
 None.
 
-## Others
+## Other
 
 None.
 
@@ -164,12 +255,11 @@ None.
 │   ├── src/App.tsx            # Home screen and manual test page
 │   └── harmony/               # HarmonyOS example project
 ├── jest/                      # JS unit tests and configuration
-├── test-cases.md              # Manual test steps
 ├── README.md                  # Chinese documentation
 └── README_en.md               # English documentation
 ```
 
-## Contributing
+## How to Contribute
 
 Issues and pull requests are welcome in the [project repository](https://github.com/react-native-oh-library/react-native-xlog-jsi).
 

@@ -38,13 +38,13 @@
     "xlog",
     "mars-xlog"
   ],
-  "repository": "https://github.com/Flickering-AI/react-native-xlog-jsi",
+  "repository": "https://github.com/react-native-oh-library/react-native-xlog-jsi",
   "author": "Xuanping <a845326948@gmail.com> (https://github.com/lxp-git)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Flickering-AI/react-native-xlog-jsi/issues"
+    "url": "https://github.com/react-native-oh-library/react-native-xlog-jsi/issues"
   },
-  "homepage": "https://github.com/Flickering-AI/react-native-xlog-jsi#readme",
+  "homepage": "https://github.com/react-native-oh-library/react-native-xlog-jsi#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },

@@ -1,7 +1,7 @@
 {
   "name": "@react-native-ohos/react-native-xlog-jsi",
-  "version": "0.4.3-rc.1",
-  "description": "The WebRTC module",
+  "version": "0.4.3-beta.1",
+  "description": "The xlog-jsi module",
   "main": "Index.ets",
   "author": "",
   "license": "MIT",
