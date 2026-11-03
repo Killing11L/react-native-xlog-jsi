@@ -11,8 +11,16 @@ declare global {
   function xlogAppenderFlush(isSync: boolean): unknown;
 }
 
-const XlogJsi = NativeModules.XlogJsi
-  ? NativeModules.XlogJsi
+interface XlogJsiModule {
+  install(rootDirectory: string, namePrefix: string, cacheDays: number, isConsoleLogOpen: boolean): void;
+}
+
+const nativeXlogJsi = (Platform.OS as string) === 'harmony'
+  ? (require('react-native').TurboModuleRegistry.get('XlogJsi') as XlogJsiModule | null)
+  : NativeModules.XlogJsi;
+
+const XlogJsi = nativeXlogJsi
+  ? nativeXlogJsi
   : new Proxy(
       {},
       {

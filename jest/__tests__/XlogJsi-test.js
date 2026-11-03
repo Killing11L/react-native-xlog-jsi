@@ -7,10 +7,12 @@
 const mockInstall = jest.fn();
 const mockNativeModules = {XlogJsi: {install: mockInstall}};
 const mockPlatform = {select: jest.fn(options => options.default)};
+const mockTurboModuleRegistry = {get: jest.fn(() => mockNativeModules.XlogJsi)};
 
 jest.mock('react-native', () => ({
   NativeModules: mockNativeModules,
   Platform: mockPlatform,
+  TurboModuleRegistry: mockTurboModuleRegistry,
 }), {virtual: true});
 
 function loadXlog() {
@@ -28,6 +30,16 @@ beforeEach(() => {
 afterEach(() => { delete global.xlogAppenderFlush; });
 
 describe('Xlog initialization', () => {
+  it('uses the TurboModule registry on Harmony', () => {
+    mockPlatform.OS = 'harmony';
+    try {
+      new (loadXlog())();
+      expect(mockTurboModuleRegistry.get).toHaveBeenCalledWith('XlogJsi');
+      expect(mockInstall).toHaveBeenCalledTimes(1);
+    } finally {
+      delete mockPlatform.OS;
+    }
+  });
   it('installs with default parameters', () => {
     const Xlog = loadXlog();
     new Xlog();
